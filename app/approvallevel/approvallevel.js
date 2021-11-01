@@ -41,21 +41,11 @@ async function getApprovalLevels(context, options) {
     return sortLevels(list);
 }
 
-// replace with merge sort or something more efficient
+// replace with merge sort or something more efficient ??
 function sortLevels(levels) {
-    var sorted = [];
-    var ctr = 0;
+    var sorted = levels.filter(l => l.isDefault);
     while (sorted.length != levels.length) {
-        if (!sorted.length) {
-            if (levels[ctr].isDefault)
-                sorted.push(levels[ctr]);
-        }
-
-        if (sorted[sorted.length - 1].onApproval == levels[ctr].id)
-            sorted.push(levels[ctr]);
-
-        if (ctr == levels.length - 1)
-            ctr == 0;
+        sorted.push(levels.find(l => l.id == sorted[sorted.length - 1].onApproval));
     }
 
     return sorted;

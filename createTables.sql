@@ -31,9 +31,7 @@ CREATE TABLE approvallevel (
 DROP TABLE IF EXISTS approvallevelcriteria;
 CREATE TABLE approvallevelcriteria (
     id INT NOT NULL AUTO_INCREMENT,
-    fieldName VARCHAR(255) NOT NULL,
-    comparator TINYINT,
-    value FLOAT,
+    approvalLevelId INT NOT NULL,
     func VARCHAR(1024),
     PRIMARY KEY (id)
 );

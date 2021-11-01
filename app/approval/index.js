@@ -57,10 +57,12 @@ async function getRequiredApprovalLevels(context, requestId) {
             continue;
 
         // check each additional criteria 
+        var criteriaFailed = false;
         for (var c of level.criteria) {
-            if (!eval(c.function))          // probably need to modify this later
-                continue;
+            if (!eval(c.func))
+                criteriaFailed = true;
         }
+        if (criteriaFailed) continue;
 
         // check that there is a primary approver
         var primary = await approver.getPrimaryApprover(context, level.id, tripRequest.locationId, tripRequest.tripTypeId)
