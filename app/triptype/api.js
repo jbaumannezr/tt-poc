@@ -4,6 +4,9 @@ module.exports.init = (app) => {
     app.post("/api/triptype", createTripType);
     app.put("/api/triptype/:id(\\d+)", updateTripType);
     app.delete("/api/triptype/:id(\\d+)", deleteTripType);
+
+    app.post("/api/triptype/event", saveTripTypeEvent);
+    app.delete("/api/triptype/event/:id(\\d+)", deleteTripTypeEvent);
 }
 
 const manager = require('./index');
@@ -55,6 +58,28 @@ async function updateTripType(req, res, next) {
 async function deleteTripType(req, res, next) {
     try {
         await manager.deleteTripType(req.context, Number(req.params.id));
+        req.response = { done: true };
+        next();
+    } catch(e) {
+        req.error = e;
+        next();
+    }
+}
+
+async function saveTripTypeEvent(req, res, next) {
+    try {
+        var id = await manager.saveTripTypeEvent(req.context, req.body);
+        req.response = { id };
+        next();
+    } catch(e) {
+        req.error = e;
+        next();
+    }
+}
+
+async function deleteTripTypeEvent(req, res, next) {
+    try {
+        await manager.deleteTripTypeEvent(req.context, Number(req.params.id));
         req.response = { done: true };
         next();
     } catch(e) {

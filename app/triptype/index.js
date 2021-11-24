@@ -1,5 +1,6 @@
 const mod = module.exports;
 const model = require("./triptype");
+const eventMod = require('./event');
 
 mod.init =                  init;
 mod.getTripTypes =          getTripTypes;
@@ -7,6 +8,9 @@ mod.getTripTypeById =       getTripTypeById;
 mod.createTripType =        createTripType;
 mod.updateTripType =        updateTripType;
 mod.deleteTripType =        deleteTripType;
+
+mod.saveTripTypeEvent =     eventMod.saveTripTypeEvent;
+mod.deleteTripTypeEvent =   eventMod.deleteTripTypeEvent;
 
 function init(app) {
     require("./api").init(app);
@@ -16,11 +20,13 @@ function init(app) {
 
 async function getTripTypes(context, options) {
     var tripTypes = await model.getTripTypes(context, options);
+    eventMod.attachTripTypeEvents(tripTypes);
     return tripTypes;
 }
 
 async function getTripTypeById(context, id) {
     var tripType = await model.getTripTypeById(context, id);
+    eventMod.attachTripTypeEvents(tripType);
     return tripType;
 }
 
