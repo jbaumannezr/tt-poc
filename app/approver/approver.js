@@ -13,6 +13,7 @@ const _ = require("lodash");
 
 function Approver(obj) {
     if (obj.id) this.id = obj.id;
+    this.clientId = db.number(obj.clientId);
     this.uuid = db.string(obj.uuid);
     this.userId = db.number(obj.userId);
     this.approvalLevelId = db.number(obj.approvalLevelId);
@@ -22,7 +23,7 @@ function Approver(obj) {
 }
 
 async function getApprovers(context, options) {
-    var where = [], params = [];
+    var where = ['clientId=?'], params = [context.clientId];
     if (options.approvalLevelId) {
         where.push('approvalLevelId=?');
         params.push(options.approvalLevelId);
@@ -35,8 +36,8 @@ async function getApprovers(context, options) {
         where.push('tripTypeId=?');
         params.push(options.tripTypeId);
     }
-    var sql = "SELECT * FROM approver" + where.length ? " WHERE " + where.join(' AND '): '';
-    list = await db(context).query(sql, params.length ? params : null);
+    var sql = "SELECT * FROM approver WHERE " + where.join(' AND ');
+    list = await db(context).query(sql, params);
     list = list.map(e => new Approver(e));
 
     return returnApprovers(list);
@@ -112,7 +113,8 @@ async function saveApprover(context, obj) {
 
     for (var l of obj.locationIds) {
         for (var t of obj.tripTypeIds) {            
-            await db(context).query("INSERT INTO approver SET ?", {
+            await db(context).insert("INSERT INTO approver SET ?", {
+                clientId: context.clientId,
                 uuid: obj.uuid,
                 userId: obj.userId,
                 approvalLevelId: obj.approvalLevelId,
@@ -126,5 +128,5 @@ async function saveApprover(context, obj) {
 }
 
 async function deleteApprover(context, uuid) {
-    await db(context).query("DELETE FROM approver WHERE uuid=?", uuid);
+    await db(context).delete("DELETE FROM approver WHERE uuid=?", uuid);
 }

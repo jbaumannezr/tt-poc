@@ -8,7 +8,7 @@ mod.deleteUser =        deleteUser;
 
 ///////////////////
 
-// const db = require("mysql-wrapper");
+const db = require("mysql-wrapper");
 
 function User(obj) {
     if (obj.id) this.id = obj.id;
@@ -40,15 +40,15 @@ async function getUserById(context, id) {
 
 async function createUser(context, obj) {
     var r = new User(obj).forSave();
-    var id = await db(context).query("INSERT INTO user SET ?", r);
+    var id = await db(context).insert("INSERT INTO user SET ?", r);
     return id;
 }
 
 async function updateUser(context, id, obj) {
     var r = new User(obj).forSave();
-    await db(context).query("UPDATE user SET ? WHERE id=?", [id, r]);
+    await db(context).update("UPDATE user SET ? WHERE id=?", [r, id]);
 }
 
 async function deleteUser(context, id) {
-    await db(context).query("DELETE FROM user WHERE id=?", id)
+    await db(context).delete("DELETE FROM user WHERE id=?", id)
 }

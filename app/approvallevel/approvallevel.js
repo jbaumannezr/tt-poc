@@ -12,6 +12,7 @@ const db = require("mysql-wrapper");
 
 function ApprovalLevel(obj) {
     if (obj.id) this.id = obj.id;
+    this.clientId = db.number(obj.clientId);
     this.name = db.string(obj.name);
     this.incOvernightOOS = obj.incOvernightOOS ? true : false;
     this.assignBusses = obj.assignBusses ? true : false;
@@ -24,6 +25,7 @@ function ApprovalLevel(obj) {
 
 ApprovalLevel.prototype.forSave = () => {
     return {
+        clientId: this.clientId,
         name: this.name,
         incOvernightOOS: this.incOvernightOOS ? 1 : 0,
         assignBusses: this.assignBusses ? 1 : 0,
@@ -36,7 +38,7 @@ ApprovalLevel.prototype.forSave = () => {
 }
 
 async function getApprovalLevels(context, options) {
-    var list = await db(context).query("SELECT * FROM approvallevel");
+    var list = await db(context).query("SELECT * FROM approvallevel WHERE clientId=?", context.clientId);
     list = list.map(e => new ApprovalLevel(e));
     return sortLevels(list);
 }
@@ -58,18 +60,18 @@ async function getApprovalLevelById(context, id) {
 
 async function createApprovalLevel(context, obj) {
     var r = new ApprovalLevel(obj).forSave();
-    var id = await db(context).query("INSERT INTO approvallevel SET ?", r);
+    var id = await db(context).insert("INSERT INTO approvallevel SET ?", r);
     return id;
 }
 
 async function updateApprovalLevel(context, id, obj) {
     var r = new ApprovalLevel(obj).forSave();
-    await db(context).query("UPDATE approvallevel SET ? WHERE id=?", [id, r]);
+    await db(context).update("UPDATE approvallevel SET ? WHERE id=?", [r, id]);
 }
 
 async function deleteApprovalLevel(context, id) {
-    await db(context).query("DELETE FROM approvallevel WHERE id=?", id);
-    await db(context).query("DELETE FROM approvalleveltriptype WHERE approvalLevelId=?", id);
-    await db(context).query("DELETE FROM approvallevelcriteria WHERE approvalLevelId=?", id);
-    await db(context).query("DELETE FROM approver WHERE approvalLevelId=?", id);
+    await db(context).delete("DELETE FROM approvallevel WHERE id=?", id);
+    await db(context).delete("DELETE FROM approvalleveltriptype WHERE approvalLevelId=?", id);
+    await db(context).delete("DELETE FROM approvallevelcriteria WHERE approvalLevelId=?", id);
+    await db(context).delete("DELETE FROM approver WHERE approvalLevelId=?", id);
 }

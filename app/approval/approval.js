@@ -37,6 +37,6 @@ async function getApprovalHistory(context, id) {
 async function createApproval(context, obj) {
     obj.timestamp = new Date().getTime() / 1000;
     var r = new Approval(obj).forSave();
-    var id = await db(context).query("INSERT INTO levelapproval SET ?", r);
+    var id = await db(context).insert("INSERT INTO levelapproval SET ?", r);
     return id;
 }

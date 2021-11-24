@@ -243,6 +243,15 @@ CREATE TABLE triptype (
     PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS triptypeevent;
+CREATE TABLE triptypeevent (
+    id INT NOT NULL AUTO_INCREMENT,
+    tripTypeId INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    KEY ix_trip_type_event (tripTypeId)
+);
+
 -- DROP TABLE IF EXISTS user;
 -- CREATE TABLE user (
 --     id INT NOT NULL AUTO_INCREMENT,
